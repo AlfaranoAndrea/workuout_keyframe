@@ -1,6 +1,6 @@
 # workuout_keyframe
 ## forder setting:
-before start download those folder and put int on main project folder:
+before start download those folder and put them on main project folder:
 - sintel from here http://sintel.is.tue.mpg.de/downloads
 - project data folder with trained models: https://drive.google.com/drive/folders/1xdm4DtwMyt1ivDlsFQZNCQFOtVWlSeCg?usp=sharing 
 - input videos: https://drive.google.com/drive/folders/1KDdkCmlVnMf89c5gIWSe0ealh6yGOGUn?usp=sharing
