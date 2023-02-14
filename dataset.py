@@ -1,3 +1,8 @@
+import pytorch_lightning as pl
+import numpy as np
+from torch.utils.data import Dataset, DataLoader, random_split
+from torchvision import datasets, transforms
+import flow_transforms
 class FlowDataModule(pl.LightningDataModule):
     def __init__(self, batch_size, workers,dataset="sintel" , camera='left'):
         super().__init__()
@@ -8,11 +13,14 @@ class FlowDataModule(pl.LightningDataModule):
         self.camera = camera
         self.dataset=dataset
         
-        self.input_transform=transforms.Compose( [flow_transforms.ArrayToTensor(),
-                                           transforms.Normalize(mean=[0,0,0], std=[255,255,255]), 
-                                            transforms.Normalize(mean=[0.45,0.432,0.411], std=[1,1,1])])
+        self.input_transform=transforms.Compose([
+                                             flow_transforms.ArrayToTensor(),
+                                             transforms.Normalize(mean=[0,0,0], std=[255,255,255]), 
+                                             transforms.Normalize(mean=[0.45,0.432,0.411], std=[1,1,1])
+                                            ])
                                            
-        self.flow_transforms= transforms.Compose([  flow_transforms.FlowToTensor(),
+        self.flow_transforms= transforms.Compose([  
+                                            flow_transforms.FlowToTensor(),
                                             transforms.Normalize(mean=[0,0],std=[div_flow,div_flow])])
         # Defining transforms to be applied on the data
     
