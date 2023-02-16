@@ -46,12 +46,12 @@ class FlowDataModule(pl.LightningDataModule):
     def setup(self, stage):   
         if(self.selected_dataset == "FlyingThings3D"):
             self.train_data = datasets.FlyingThings3D(
-                                self.download_dir,
-                                split = "train", 
-                                transforms = self.dataset_transformation,
-                                pass_name = self.pass_name,
-                                camera=  self.camera                   
-                                )
+                                        self.download_dir,
+                                        split = "train", 
+                                        transforms = self.dataset_transformation,
+                                        pass_name = self.pass_name,
+                                        camera=  self.camera                   
+                                        )
 
             self.test_data = datasets.FlyingThings3D(
                                         self.download_dir,
