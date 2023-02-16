@@ -2,7 +2,7 @@ import torch.nn.functional as F
 import pytorch_lightning as pl
 import torch
 from loss import multiscaleEPE, realEPE
-from flowNetSNet import FlowNetSNet
+from models.flowNetSNet import FlowNetSNet
 
 class FlowNetS(pl.LightningModule):
     def __init__(self, checkpoint=None):
