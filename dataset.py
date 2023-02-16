@@ -106,17 +106,11 @@ class FlowDataModule(pl.LightningDataModule):
         assert(isinstance(array, np.ndarray))
         array2= np.float32(array) 
         array2 = np.transpose(array2, (2, 0, 1))
-        # handle numpy array
         tensor = torch.from_numpy(array2)
-        # put it from HWC to CHW format
         return tensor.float()
     def FlowToTensor(self, array):
         """Converts a numpy.ndarray (H x W x C) to a torch.FloatTensor of shape (C x H x W)."""
         assert(isinstance(array, np.ndarray))
-
         array2= np.float32(array)   
-        #array2 = np.transpose(array2, (2, 0, 1))
-        # handle numpy array
         tensor = torch.from_numpy(array2)
-        # put it from HWC to CHW format
         return tensor.float()
