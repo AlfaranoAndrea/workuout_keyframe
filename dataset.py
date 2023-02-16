@@ -1,27 +1,29 @@
 import pytorch_lightning as pl
 import numpy as np
-from torch.utils.data import Dataset, DataLoader, random_split
+from torch.utils.data import  DataLoader
 from torchvision import datasets, transforms
-import flow_transforms
+
+import torch 
 class FlowDataModule(pl.LightningDataModule):
-    def __init__(self, batch_size, workers,dataset="sintel" , camera='left'):
+    def __init__(self, batch_size=1, workers=1,selected_dataset="sintel" , camera='left'):
         super().__init__()
 
-        self.download_dir = './root'    # Directory to store FlyingChairs Data     
-        self.batch_size =  batch_size   # Defining batch size of our data 
-        self.workers =    workers      
+        self.download_dir = './dataset'
+        self.batch_size = batch_size  
+        self.workers = workers      
         self.camera = camera
-        self.dataset=dataset
+        self.selected_dataset=selected_dataset
         
         self.input_transform=transforms.Compose([
-                                             flow_transforms.ArrayToTensor(),
+                                             self.ArrayToTensor,
                                              transforms.Normalize(mean=[0,0,0], std=[255,255,255]), 
                                              transforms.Normalize(mean=[0.45,0.432,0.411], std=[1,1,1])
                                             ])
                                            
         self.flow_transforms= transforms.Compose([  
-                                            flow_transforms.FlowToTensor(),
-                                            transforms.Normalize(mean=[0,0],std=[div_flow,div_flow])])
+                                            self.FlowToTensor,
+                                            transforms.Normalize(mean=[0,0],std=[20,20])
+                                            ])
         # Defining transforms to be applied on the data
     
     def dataset_transformation(self, input1, input2,flow, valid_flow_mask):
@@ -41,52 +43,80 @@ class FlowDataModule(pl.LightningDataModule):
         
         return input1, input2 , flow, valid_flow_mask
     
-    def setup(self, stage=None):
-        
-        if(self.dataset == "FlyingThings3D"):
-                self.train_data = datasets.FlyingThings3D(self.download_dir,
-                              split = "train", 
-                              transforms = self.dataset_transformation,
-                              pass_name = self.pass_name,
-                              camera=  self.camera                   )
+    def setup(self, stage):   
+        if(self.selected_dataset == "FlyingThings3D"):
+            self.train_data = datasets.FlyingThings3D(
+                                self.download_dir,
+                                split = "train", 
+                                transforms = self.dataset_transformation,
+                                pass_name = self.pass_name,
+                                camera=  self.camera                   
+                                )
 
-                self.test_data = datasets.FlyingThings3D(self.download_dir,
+            self.test_data = datasets.FlyingThings3D(
+                                        self.download_dir,
                                         split = "val",
                                         transforms = self.dataset_transformation,
                                         pass_name = self.pass_name,
                                         camera=  self.camera               
-                                                        )
-        if(self.dataset == "FlyingChairs"):
-            self.train_data = datasets.FlyingChairs(self.download_dir,
-                              split = "train", 
-                              transforms = self.dataset_transformation)
+                                        )
+        
+        elif(self.selected_dataset == "FlyingChairs"):
+            self.train_data = datasets.FlyingChairs(
+                                        self.download_dir,
+                                        split = "train", 
+                                        transforms = self.dataset_transformation
+                                        )
 
-            self.test_data = datasets.FlyingChairs(self.download_dir,
+            self.test_data = datasets.FlyingChairs( 
+                                        self.download_dir,
                                         split = "val",
                                         transforms = self.dataset_transformation,
-                                              )
-        if(self.dataset=="Sintel"):   
-            self.train_data = datasets.Sintel(self.download_dir,
-                              split = "train", 
-                              transforms = self.dataset_transformation,
-                              pass_name = "clean"                  )
+                                        )
 
-            self.test_data = datasets.Sintel(self.download_dir,
-                                        split = "train",
+        elif(self.selected_dataset=="Sintel"):   
+            self.train_data = datasets.Sintel(
+                                        self.download_dir,
+                                        split = "train", 
+                                        transforms = self.dataset_transformation,
+                                        pass_name = "clean"                  
+                                        )
+
+            self.test_data = datasets.Sintel(
+                                        self.download_dir,
+                                        split = "test",
                                         transforms = self.dataset_transformation,
                                         pass_name = "final"
                                                         )
   
     def train_dataloader(self):
-        
-          # Generating train_dataloader
-        return DataLoader(self.train_data, 
-                          batch_size = self.batch_size,
-                          num_workers = self.workers )
+        return DataLoader(
+                self.train_data, 
+                batch_size = self.batch_size,
+                num_workers = self.workers )
 
     def test_dataloader(self):
-        
-        # Generating test_dataloader
-        return DataLoader(self.test_data,
-                          batch_size = self.batch_size,
-                          num_workers = self.workers )
+        return DataLoader(
+                self.test_data,
+                batch_size = self.batch_size,
+                num_workers = self.workers )
+
+    def ArrayToTensor(self, array):
+        """Converts a numpy.ndarray (H x W x C) to a torch.FloatTensor of shape (C x H x W)."""
+        assert(isinstance(array, np.ndarray))
+        array2= np.float32(array) 
+        array2 = np.transpose(array2, (2, 0, 1))
+        # handle numpy array
+        tensor = torch.from_numpy(array2)
+        # put it from HWC to CHW format
+        return tensor.float()
+    def FlowToTensor(self, array):
+        """Converts a numpy.ndarray (H x W x C) to a torch.FloatTensor of shape (C x H x W)."""
+        assert(isinstance(array, np.ndarray))
+
+        array2= np.float32(array)   
+        #array2 = np.transpose(array2, (2, 0, 1))
+        # handle numpy array
+        tensor = torch.from_numpy(array2)
+        # put it from HWC to CHW format
+        return tensor.float()
