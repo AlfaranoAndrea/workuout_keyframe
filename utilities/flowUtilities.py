@@ -28,14 +28,14 @@ def _eightDivisibility(number):
         number+=2
     return number
 
-def flowVideo(path, model, device,temporary_path= "./temp/processedFloFrames/"):
+def flowVideo(path, model, device,step=4,temporary_path= "./temp/processedFloFrames/"):
     os.makedirs(temporary_path, exist_ok=True)
     files = os.listdir(path) 
     files.sort(key = lambda x: int(x[:-4]))
     
     image2 = cv2.imread(path+files[0])
 
-    scale_percent = 25 # percent of original size
+    scale_percent = 40 # percent of original size
     width = int(image2.shape[1] * scale_percent / 100)
     height = int(image2.shape[0] * scale_percent / 100)
     dim = (
@@ -43,7 +43,7 @@ def flowVideo(path, model, device,temporary_path= "./temp/processedFloFrames/"):
         _eightDivisibility(height)
         )
     image2 = cv2.resize(image2, dim, interpolation = cv2.INTER_AREA)
-    for i in tqdm(range(1,len(files))):
+    for i in tqdm(range(1,len(files))[::step]):
         image1=image2
         image2 = cv2.imread(path+files[i])
         image2 = cv2.resize(image2, dim, interpolation = cv2.INTER_AREA)

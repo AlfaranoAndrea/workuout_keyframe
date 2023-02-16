@@ -5,11 +5,11 @@ def gauss(n=11,sigma=1):
     r = range(-int(n/2),int(n/2)+1)
     return [1 / (sigma * sqrt(2*pi)) * exp(-float(x)**2/(2*sigma**2)) for x in r]
 
-def moving_average(x, k):
+def movingAverage(x, k):
     return np.convolve(x, np.ones(k), 'valid')/k 
 
 
-def normalize_zero_mean(sign):
+def normalizeZeroMean(sign):
     m= np.mean(sign)
     processed= sign- m
     return processed
@@ -19,8 +19,7 @@ def normalize_zero_mean(sign):
 def absolute(sign):
     return np.where(sign > 0 , sign , -sign  )
 
-def findKeyPoints(y):
+def findKeyPoints(y, distance):
     max= np.max(y)
-    print(max*0.85)
-    peaks,_= find_peaks(y,distance=60,prominence=10)   
-    return peaks[y[peaks]> max*0.8]
+    peaks,_= find_peaks(y,distance=distance,prominence=10)   
+    return peaks[y[peaks]> max*0.1]

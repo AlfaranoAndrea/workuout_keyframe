@@ -35,7 +35,7 @@ def find_center_of_gravity(path):
     
     return  cordinates_x.astype(int), cordinates_y.astype(int)
 
-def save_key_frames(frames_path, keyFramesList, threshold=60, near=30, slowmotion=6, speedUp=10, title="final", fps=24):
+def save_key_frames(frames_path, keyFramesList, step=4, threshold=60, near=30, slowmotion=6, speedUp=10, title="final", fps=24):
     """
     input: frames: of the video
            keyFramesList: lis of keyframes index
@@ -48,6 +48,7 @@ def save_key_frames(frames_path, keyFramesList, threshold=60, near=30, slowmotio
     selected_frames=[]
     focus_frames=[]
     keyFramesList.sort()
+    keyFramesList = [x * step for x in keyFramesList]
     print(keyFramesList)
     files = os.listdir(frames_path) 
     files.sort(key = lambda x: int(x[:-4]))
