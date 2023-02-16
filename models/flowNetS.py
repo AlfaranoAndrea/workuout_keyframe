@@ -5,13 +5,14 @@ from loss import multiscaleEPE, realEPE
 from models.flowNetSNet import FlowNetSNet
 
 class FlowNetS(pl.LightningModule):
-    def __init__(self, checkpoint=None):
+    def __init__(self, checkpoint=None, lr=1e-4):
         super().__init__()
         self.net= FlowNetSNet()
+        self.lr=lr
         
         
         if(checkpoint is not None):
-             self.load_state_dict(checkpoint)
+             self.net.load_state_dict(checkpoint)
                 
     def forward (self, x):
         return self.net(x)
@@ -23,14 +24,7 @@ class FlowNetS(pl.LightningModule):
             # i want to obtain the y resized to various level, in order to compute loss function:
 
         x,x1, y= batch    
-        tensors= []
-        for i in range(len(x1)):
-            
-            cat= torch.cat((x[i],x1[i]),1)
-          #  cat= torch.reshape(cat, (1, *cat.size()))
-            tensors.append(cat)
-            
-        x_train= torch.cat(tensors,0)
+        x_train= torch.cat((x,x1),1)
         output=self(x_train) 
         h, w = y.size()[-2:]  
     
@@ -42,14 +36,7 @@ class FlowNetS(pl.LightningModule):
 
     def test_step(self, batch, batch_idx):
         x,x1, y= batch    
-        tensors= []
-        for i in range(len(x1)):
-            
-            cat= torch.cat((x[i],x1[i]),1)
-          #  cat= torch.reshape(cat, (1, *cat.size()))
-            tensors.append(cat)
-            
-        x_train= torch.cat(tensors,0)
+        x_train= torch.cat((x,x1),1)
         output=self(x_train) 
         h, w = y.size()[-2:]  
     
@@ -59,7 +46,7 @@ class FlowNetS(pl.LightningModule):
         return loss
 
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=1e-5, betas=(0.9, 0.999))
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.lr, betas=(0.9, 0.999))
         return optimizer
     
     def save(self, path= '/models'):
