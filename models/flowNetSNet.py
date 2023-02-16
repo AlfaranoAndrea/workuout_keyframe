@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch
 
 class FlowNetSNet(nn.Module):
-    def __init__(self, fn):
+    def __init__(self):
         super().__init__()
         #ENCODER PART OF THE NETWORK
        
