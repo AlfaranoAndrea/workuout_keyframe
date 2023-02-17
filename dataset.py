@@ -82,7 +82,7 @@ class FlowDataModule(pl.LightningDataModule):
                                         pass_name = "final"                  
                                         )
 
-             self.test_data = None #datasets.Sintel(
+            self.test_data = None #datasets.Sintel(
 #                                         self.download_dir,
 #                                         split = "test",
 #                                         transforms = self.dataset_transformation,
