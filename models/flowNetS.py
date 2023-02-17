@@ -12,7 +12,7 @@ class FlowNetS(pl.LightningModule):
         
         
         if(checkpoint is not None):
-             self.net.load_state_dict(checkpoint)
+            self.net.load_state_dict(checkpoint)
                 
     def forward (self, x):
         return self.net(x)
@@ -40,14 +40,14 @@ class FlowNetS(pl.LightningModule):
         output=self(x_train) 
         h, w = y.size()[-2:]  
     
-        output = [F.interpolate(output[0], (h,w)), *output[1:]] # it upscale output image to make confrontable y with output      
+       # output = [F.interpolate(output[0], (h,w)), *output[1:]] # it upscale output image to make confrontable y with output      
         loss =  realEPE(output[0], y)
         self.log('test_loss', loss)
         return loss
 
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=self.lr, betas=(0.9, 0.999))
+        optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr)
         return optimizer
     
     def save(self, path= '/models'):
-        torch.save(self.state_dict(), path)
+        torch.save(self.net.state_dict(), path)
