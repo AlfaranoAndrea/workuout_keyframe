@@ -79,15 +79,15 @@ class FlowDataModule(pl.LightningDataModule):
                                         self.download_dir,
                                         split = "train", 
                                         transforms = self.dataset_transformation,
-                                        pass_name = "clean"                  
+                                        pass_name = "final"                  
                                         )
 
-            self.test_data = datasets.Sintel(
-                                        self.download_dir,
-                                        split = "test",
-                                        transforms = self.dataset_transformation,
-                                        pass_name = "final"
-                                                        )
+             self.test_data = None #datasets.Sintel(
+#                                         self.download_dir,
+#                                         split = "test",
+#                                         transforms = self.dataset_transformation,
+#                                         pass_name = "final"
+#                                                         )
   
     def train_dataloader(self):
         return DataLoader(
